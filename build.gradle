@@ -86,7 +86,7 @@ project.ext.set("hugo", project.hasProperty("HUGO_EXEC") ? HUGO_EXEC : "hugo")
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-group = 'name.neuhalfen.projects.crypto.bouncycastle.openpgp'
+group = 'de.vanitasvitae.pgpainless'
 version = '2.1.0'
 
 repositories {
