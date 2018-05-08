@@ -107,6 +107,8 @@ public final class BuildEncryptionOutputStreamAPI {
 
     To withStrongAlgorithms();
 
+    To withOxAlgorithms();
+
     To withAlgorithms(PGPAlgorithmSuite algorithmSuite);
 
     @SuppressWarnings("PMD.ShortClassName")
@@ -149,6 +151,14 @@ public final class BuildEncryptionOutputStreamAPI {
       LOGGER
           .trace("use algorithms {}",
               BuildEncryptionOutputStreamAPI.this.algorithmSuite.toString());
+      return new ToImpl();
+    }
+
+    public To withOxAlgorithms() {
+      BuildEncryptionOutputStreamAPI.this.algorithmSuite = DefaultPGPAlgorithmSuites.oxSuite();
+      LOGGER
+          .trace("use algorithms {}",
+              BuildEncryptionOutputStreamAPI.this.toString());
       return new ToImpl();
     }
 
