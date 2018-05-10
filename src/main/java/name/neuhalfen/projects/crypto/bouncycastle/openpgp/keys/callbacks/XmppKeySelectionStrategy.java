@@ -16,12 +16,12 @@ import org.bouncycastle.openpgp.PGPPublicKeyRing;
  * escaped uids with &lt; and &gt;.
  * This class avoids doing that.
  */
-public class Xep0373KeySelectionStrategy extends Rfc4880KeySelectionStrategy {
+public class XmppKeySelectionStrategy extends Rfc4880KeySelectionStrategy {
 
     /**
      * @param dateOfTimestampVerification The date used for key expiration date checks as "now".
      */
-    public Xep0373KeySelectionStrategy(Date dateOfTimestampVerification) {
+    public XmppKeySelectionStrategy(Date dateOfTimestampVerification) {
         super(dateOfTimestampVerification);
     }
 
@@ -30,7 +30,7 @@ public class Xep0373KeySelectionStrategy extends Rfc4880KeySelectionStrategy {
      *
      * Deriving classes can override this.
      *
-     * @param uid the userid as passed by upstream.
+     * @param bareJid jid of the user.
      * @param keyringConfig the keyring config
      * @param purpose what is the requested key to be used for
      *
@@ -42,13 +42,20 @@ public class Xep0373KeySelectionStrategy extends Rfc4880KeySelectionStrategy {
     @SuppressWarnings({"PMD.LawOfDemeter"})
     protected Set<PGPPublicKeyRing> publicKeyRingsForUid(
             final PURPOSE purpose,
-            final String uid,
+            final String bareJid,
             KeyringConfig keyringConfig)
             throws IOException, PGPException
     {
+        String xmppUid;
+        if (bareJid.startsWith("xmpp:")) {
+            xmppUid = bareJid;
+        } else {
+            xmppUid = "xmpp:" + bareJid;
+        }
+
         Set<PGPPublicKeyRing> keyringsForUid = new HashSet<>();
         final Iterator<PGPPublicKeyRing> keyRings = keyringConfig.getPublicKeyRings()
-                .getKeyRings(uid, false, true);
+                .getKeyRings(xmppUid, false, true);
 
         while (keyRings.hasNext()) {
             keyringsForUid.add(keyRings.next());
