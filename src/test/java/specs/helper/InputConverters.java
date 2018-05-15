@@ -1,7 +1,5 @@
 package specs.helper;
 
-import static specs.helper.InputConverters.ByteArray.toHexString;
-
 import org.bouncycastle.util.encoders.Hex;
 
 public class InputConverters {

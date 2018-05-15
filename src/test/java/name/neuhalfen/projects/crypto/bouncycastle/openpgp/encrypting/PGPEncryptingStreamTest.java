@@ -36,9 +36,7 @@ public class PGPEncryptingStreamTest {
 
   @Before
   public void installBCProvider() {
-    if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-      Security.addProvider(new BouncyCastleProvider());
-    }
+    BouncyGPG.setProvider(new BouncyCastleProvider());
   }
 
   @Test

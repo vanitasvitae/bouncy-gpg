@@ -3,7 +3,8 @@ package name.neuhalfen.projects.crypto.bouncycastle.openpgp.keys;
 
 import java.util.Iterator;
 import javax.annotation.Nullable;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import name.neuhalfen.projects.crypto.bouncycastle.openpgp.BouncyGPG;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPrivateKey;
 import org.bouncycastle.openpgp.PGPPublicKeyRing;
@@ -70,10 +71,10 @@ public final class PGPUtilities {
         Long.toHexString(encryptedKey.getKeyID()));
 
     PGPDigestCalculatorProvider calcProvider = new JcaPGPDigestCalculatorProviderBuilder()
-        .setProvider(BouncyCastleProvider.PROVIDER_NAME).build();
+        .setProvider(BouncyGPG.getProvider()).build();
 
     PBESecretKeyDecryptor decryptor = new JcePBESecretKeyDecryptorBuilder(
-        calcProvider).setProvider(BouncyCastleProvider.PROVIDER_NAME)
+        calcProvider).setProvider(BouncyGPG.getProvider())
         .build(passphrase);
 
     return encryptedKey.extractPrivateKey(decryptor);

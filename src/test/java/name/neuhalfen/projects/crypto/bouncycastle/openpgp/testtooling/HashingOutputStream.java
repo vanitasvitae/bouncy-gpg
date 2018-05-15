@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import org.bouncycastle.jcajce.provider.digest.SHA3;
+
 import org.bouncycastle.jcajce.provider.digest.SHA3.Digest256;
 import org.bouncycastle.jcajce.provider.digest.SHA3.Digest512;
 

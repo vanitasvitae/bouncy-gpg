@@ -12,9 +12,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.Security;
 import java.security.SignatureException;
-import java.time.Instant;
 import java.util.Date;
 
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.BouncyGPG;
@@ -55,9 +53,7 @@ public class EncryptionDecryptionRoundtripIntegrationTest {
 
   @Before
   public void installBCProvider() {
-    if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-      Security.addProvider(new BouncyCastleProvider());
-    }
+    BouncyGPG.setProvider(new BouncyCastleProvider());
   }
 
   @Test

@@ -1,8 +1,15 @@
 package name.neuhalfen.projects.crypto.bouncycastle.openpgp;
 
 
+import java.security.Provider;
+import java.security.Security;
+
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 @SuppressWarnings({"PMD.AtLeastOneConstructor","PMD.AccessorMethodGeneration","PMD.LawOfDemeter"})
 public final class BouncyGPG {
+
+  private static Provider PROVIDER = Security.getProvider(BouncyCastleProvider.PROVIDER_NAME);
 
   private BouncyGPG() {
   }
@@ -32,6 +39,14 @@ public final class BouncyGPG {
    */
   public static BuildEncryptionOutputStreamAPI encryptToStream() {
     return new BuildEncryptionOutputStreamAPI();
+  }
+
+  public static void setProvider(Provider provider) {
+    PROVIDER = provider;
+  }
+
+  public static Provider getProvider() {
+    return PROVIDER;
   }
 
 }
