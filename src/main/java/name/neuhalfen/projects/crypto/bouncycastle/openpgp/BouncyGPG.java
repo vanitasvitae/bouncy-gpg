@@ -41,6 +41,10 @@ public final class BouncyGPG {
     return new BuildEncryptionOutputStreamAPI();
   }
 
+  public static BuildPGPKeyGeneratorAPI createKeyPair() {
+    return new BuildPGPKeyGeneratorAPI();
+  }
+
   public static void setProvider(Provider provider) {
     PROVIDER = provider;
   }
