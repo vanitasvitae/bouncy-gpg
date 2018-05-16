@@ -17,7 +17,6 @@ import name.neuhalfen.projects.crypto.bouncycastle.openpgp.keys.callbacks.KeySel
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.keys.keyrings.KeyringConfig;
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.testtooling.Configs;
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.testtooling.ExampleMessages;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.junit.Before;
@@ -32,7 +31,7 @@ public class RFC4880KeySelectionStrategyTest {
 
   @Before
   public void before() {
-    BouncyGPG.setProvider(new BouncyCastleProvider());
+      BouncyGPG.registerProvider();
   }
 
   @Test

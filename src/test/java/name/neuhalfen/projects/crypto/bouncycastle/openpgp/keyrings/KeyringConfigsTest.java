@@ -15,7 +15,6 @@ import name.neuhalfen.projects.crypto.bouncycastle.openpgp.keys.keyrings.Keyring
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.keys.keyrings.KeyringConfigs;
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.testtooling.Configs;
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.testtooling.ExampleMessages;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPException;
 import org.hamcrest.text.IsEmptyString;
 import org.junit.Before;
@@ -42,7 +41,7 @@ public class KeyringConfigsTest {
 
   @Before
   public void before() {
-    BouncyGPG.setProvider(new BouncyCastleProvider());
+      BouncyGPG.registerProvider();
   }
 
   @Test

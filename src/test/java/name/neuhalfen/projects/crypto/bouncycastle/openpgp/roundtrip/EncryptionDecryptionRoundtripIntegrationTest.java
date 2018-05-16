@@ -26,7 +26,6 @@ import name.neuhalfen.projects.crypto.bouncycastle.openpgp.keys.keyrings.InMemor
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.keys.keyrings.KeyringConfigs;
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.testtooling.Configs;
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.testtooling.ExampleMessages;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.util.io.Streams;
 import org.junit.Before;
@@ -53,7 +52,7 @@ public class EncryptionDecryptionRoundtripIntegrationTest {
 
   @Before
   public void installBCProvider() {
-    BouncyGPG.setProvider(new BouncyCastleProvider());
+    BouncyGPG.registerProvider();
   }
 
   @Test

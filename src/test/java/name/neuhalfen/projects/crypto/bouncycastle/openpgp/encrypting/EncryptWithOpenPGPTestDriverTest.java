@@ -13,7 +13,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.Security;
 import java.security.SignatureException;
 
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.BouncyGPG;
@@ -24,7 +23,6 @@ import name.neuhalfen.projects.crypto.bouncycastle.openpgp.testtooling.Configs;
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.testtooling.DevNullOutputStream;
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.testtooling.RandomDataInputStream;
 import org.bouncycastle.crypto.tls.HashAlgorithm;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPException;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -36,7 +34,7 @@ public class EncryptWithOpenPGPTestDriverTest {
 
   @Before
   public void installBCProvider() {
-    BouncyGPG.setProvider(new BouncyCastleProvider());
+    BouncyGPG.registerProvider();
   }
 
   @Test

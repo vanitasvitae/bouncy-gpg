@@ -3,6 +3,8 @@ package name.neuhalfen.projects.crypto.bouncycastle.openpgp;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.Security;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -14,6 +16,7 @@ import name.neuhalfen.projects.crypto.bouncycastle.openpgp.algorithms.PublicKeyT
 import org.bouncycastle.bcpg.HashAlgorithmTags;
 import org.bouncycastle.bcpg.sig.Features;
 import org.bouncycastle.bcpg.sig.KeyFlags;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPEncryptedData;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPKeyPair;
@@ -88,10 +91,10 @@ public class BuildPGPKeyGeneratorAPI {
         private Build() {
         }
 
-        public PGPKeyRingGenerator build() throws NoSuchAlgorithmException, PGPException {
+        public PGPKeyRingGenerator build() throws NoSuchAlgorithmException, PGPException, NoSuchProviderException {
             KeyPairGenerator pbkcGenerator = KeyPairGenerator.getInstance(
                     BuildPGPKeyGeneratorAPI.this.keyType.getAlgorithmName(),
-                    BouncyGPG.getProvider());
+                    BouncyCastleProvider.PROVIDER_NAME);
             pbkcGenerator.initialize(BuildPGPKeyGeneratorAPI.this.keySize.getSize());
 
             // Underlying public-key-cryptography key pair
@@ -99,7 +102,7 @@ public class BuildPGPKeyGeneratorAPI {
 
             // hash calculator
             PGPDigestCalculator calculator = new JcaPGPDigestCalculatorProviderBuilder()
-                    .setProvider(BouncyGPG.getProvider())
+                    .setProvider(BouncyCastleProvider.PROVIDER_NAME)
                     .build()
                     .get(HashAlgorithmTags.SHA1);
 
@@ -116,7 +119,7 @@ public class BuildPGPKeyGeneratorAPI {
             PBESecretKeyEncryptor encryptor = passphrase == null ?
                     null : // unencrypted key pair, otherwise AES-256 encrypted
                     new JcePBESecretKeyEncryptorBuilder(PGPEncryptedData.AES_256, calculator)
-                            .setProvider(BouncyGPG.getProvider())
+                            .setProvider(BouncyCastleProvider.PROVIDER_NAME)
                             .build(passphrase);
 
             // Mimic GnuPGs signature sub packets

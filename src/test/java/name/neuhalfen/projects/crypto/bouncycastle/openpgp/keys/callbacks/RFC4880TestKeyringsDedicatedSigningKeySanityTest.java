@@ -11,7 +11,6 @@ import java.util.Date;
 
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.BouncyGPG;
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.keys.keyrings.KeyringConfig;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.bouncycastle.openpgp.PGPPublicKeyRingCollection;
@@ -27,7 +26,7 @@ public class RFC4880TestKeyringsDedicatedSigningKeySanityTest {
 
   @Before
   public void before() {
-    BouncyGPG.setProvider(new BouncyCastleProvider());
+    BouncyGPG.registerProvider();
   }
 
   @Test

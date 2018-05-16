@@ -10,7 +10,6 @@ import java.io.IOException;
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.algorithms.DefaultPGPAlgorithmSuites;
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.keys.keyrings.KeyringConfig;
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.testtooling.Configs;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKeyRingCollection;
 import org.bouncycastle.openpgp.PGPSecretKeyRingCollection;
@@ -22,7 +21,7 @@ public class BuildEncryptionOutputStreamAPITest {
 
   @Before
   public void installBCProvider() {
-    BouncyGPG.setProvider(new BouncyCastleProvider());
+    BouncyGPG.registerProvider();
   }
 
   @Test(expected = IllegalArgumentException.class)

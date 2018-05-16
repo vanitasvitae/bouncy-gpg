@@ -10,7 +10,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.BouncyGPG;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.io.Streams;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -122,7 +121,7 @@ public class HashingOutputStreamTest {
     final int KB = 1024;
     final int MB = 1024 * KB;
 
-    BouncyGPG.setProvider(new BouncyCastleProvider());
+    BouncyGPG.registerProvider();
 
     final long sampleSizeMB = 1024;
     RandomDataInputStream in = new RandomDataInputStream(sampleSizeMB * MB);
