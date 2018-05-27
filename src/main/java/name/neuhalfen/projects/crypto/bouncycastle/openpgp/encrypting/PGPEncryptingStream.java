@@ -68,7 +68,7 @@ public final class PGPEncryptingStream extends OutputStream {
   //Return a stream that, when written plaintext into, writes the ciphertext into cipherTextSink.
   public static OutputStream create(final KeyringConfig config,
       final PGPAlgorithmSuite algorithmSuite,
-      final String signingUid,
+      final Long signingKeyId,
       final OutputStream cipherTextSink,
       final KeySelectionStrategy keySelectionStrategy,
       final boolean armor,
@@ -95,14 +95,14 @@ public final class PGPEncryptingStream extends OutputStream {
     }
 
     final PGPEncryptingStream encryptingStream = new PGPEncryptingStream(config, algorithmSuite);
-    encryptingStream.setup(cipherTextSink, signingUid, pubEncKeys, keySelectionStrategy, armor);
+    encryptingStream.setup(cipherTextSink, signingKeyId, pubEncKeys, keySelectionStrategy, armor);
     return encryptingStream;
   }
 
 
   /**
    * @param cipherTextSink Where the ciphertext goes
-   * @param signingUid Sign with this uid. null: do not sign
+   * @param signingKeyId Sign with this uid. null: do not sign
    * @param pubEncKeys the pub enc keys
    * @param keySelectionStrategy key selection strategy (for signatures)
    * @param armor if OutputStream should be "armored", that means base64 encoded
@@ -116,12 +116,12 @@ public final class PGPEncryptingStream extends OutputStream {
    */
   @SuppressWarnings("PMD.LawOfDemeter")
   private void setup(final OutputStream cipherTextSink,
-      @Nullable final String signingUid,
+      @Nullable final Long signingKeyId,
       final Set<PGPPublicKey> pubEncKeys,
       final KeySelectionStrategy keySelectionStrategy,
       final boolean armor) throws
       IOException, PGPException {
-    isDoSign = (signingUid != null);
+    isDoSign = (signingKeyId != null);
 
     final OutputStream sink;
     if (armor) {
@@ -146,20 +146,20 @@ public final class PGPEncryptingStream extends OutputStream {
     outerEncryptionStream = cPk.open(sink, new byte[1 << 16]);
 
     if (isDoSign) {
-      final PGPPublicKey signingPublicKey = keySelectionStrategy
-          .selectPublicKey(PURPOSE.FOR_SIGNING, signingUid, config);
+      final PGPPublicKey signingPublicKey =
+              config.getPublicKeyRings().getPublicKey(signingKeyId);
       if (signingPublicKey == null) {
         throw new PGPException(
-            "No suitable public key found for signing with uid: '" + signingUid + "'");
+            "No suitable public key found for signing with uid: '" + signingKeyId + "'");
       }
-      LOGGER.trace("Signing for uid '{}' with key 0x{}.", signingUid,
+      LOGGER.trace("Signing for uid '{}' with key 0x{}.", signingKeyId,
           Long.toHexString(signingPublicKey.getKeyID()));
 
       final PGPSecretKey pgpSec = config.getSecretKeyRings()
           .getSecretKey(signingPublicKey.getKeyID());
       if (pgpSec == null) {
         throw new PGPException(
-            "No suitable private key found for signing with uid: '" + signingUid
+            "No suitable private key found for signing with uid: '" + signingKeyId
                 + "' (although found pubkey: " + signingPublicKey.getKeyID() + ")");
       }
 

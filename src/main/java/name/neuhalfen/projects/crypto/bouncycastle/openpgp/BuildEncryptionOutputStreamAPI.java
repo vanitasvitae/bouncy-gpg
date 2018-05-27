@@ -35,7 +35,7 @@ public final class BuildEncryptionOutputStreamAPI {
   private KeySelectionStrategy keySelectionStrategy;
 
   @Nullable
-  private String signWith;
+  private Long signWith;
   private Set<PGPPublicKey> recipients;
   private boolean armorOutput;
 
@@ -118,9 +118,13 @@ public final class BuildEncryptionOutputStreamAPI {
 
       SignWith toRecipients(String... recipients) throws PGPException;
 
+      SignWith toRecipients(long... recipients) throws PGPException;
+
       interface SignWith {
 
         Armor andSignWith(String userId) throws IOException, PGPException;
+
+        Armor andSignWith(long keyId) throws IOException, PGPException;
 
         Armor andDoNotSign();
 
@@ -199,6 +203,21 @@ public final class BuildEncryptionOutputStreamAPI {
 
       }
 
+      private PGPPublicKey extractValidKey(long keyId) throws PGPException {
+        try {
+          final PGPPublicKey recipientsEncryptionKey = encryptionConfig.getPublicKeyRings().getPublicKey(keyId);
+
+          if (recipientsEncryptionKey == null || !recipientsEncryptionKey.isEncryptionKey()) {
+            throw new PGPException("No (suitable) public key for encryption with key ID " + keyId + " found.");
+          }
+
+          LOGGER.trace("encrypt for key 0x{}", Long.toHexString(keyId));
+          return recipientsEncryptionKey;
+        } catch (IOException e) {
+          throw new PGPException("Failed to load key " + Long.toHexString(keyId), e);
+        }
+      }
+
       @Override
       public SignWith toRecipient(final String recipient) throws PGPException {
 
@@ -214,6 +233,16 @@ public final class BuildEncryptionOutputStreamAPI {
 
         for (final String recipient : recipients) {
           BuildEncryptionOutputStreamAPI.this.recipients.add(extractValidKey(recipient));
+        }
+
+        return new SignWithImpl();
+      }
+
+      public SignWith toRecipients(long... keyIds) throws PGPException {
+        BuildEncryptionOutputStreamAPI.this.recipients = new HashSet<>();
+
+        for (long id : keyIds) {
+          BuildEncryptionOutputStreamAPI.this.recipients.add(extractValidKey(id));
         }
 
         return new SignWithImpl();
@@ -245,7 +274,20 @@ public final class BuildEncryptionOutputStreamAPI {
                     + " found (public key exists!)");
           }
 
-          BuildEncryptionOutputStreamAPI.this.signWith = userId;
+          BuildEncryptionOutputStreamAPI.this.signWith = signingKeyPubKey.getKeyID();
+          LOGGER.trace("sign with {}", BuildEncryptionOutputStreamAPI.this.signWith);
+          return new ArmorImpl();
+        }
+
+        public Armor andSignWith(long keyId) throws PGPException, IOException {
+          PGPSecretKey signingKey = encryptionConfig.getSecretKeyRings()
+                  .getSecretKey(keyId);
+          if (signingKey == null || !signingKey.isSigningKey()) {
+            throw new PGPException(
+                    "No (suitable) secret key for signing with keyID " + keyId + " found.");
+          }
+
+          BuildEncryptionOutputStreamAPI.this.signWith = signingKey.getKeyID();
           LOGGER.trace("sign with {}", BuildEncryptionOutputStreamAPI.this.signWith);
           return new ArmorImpl();
         }

@@ -7,16 +7,20 @@ import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SignatureException;
+import java.util.Date;
 import java.util.Set;
 
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.algorithms.PGPAlgorithmSuite;
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.keys.PGPUtilities;
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.keys.callbacks.KeySelectionStrategy;
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.keys.callbacks.Pre202KeySelectionStrategy;
+import name.neuhalfen.projects.crypto.bouncycastle.openpgp.keys.callbacks.Rfc4880KeySelectionStrategy;
 import name.neuhalfen.projects.crypto.bouncycastle.openpgp.keys.keyrings.KeyringConfig;
 import org.bouncycastle.openpgp.PGPException;
 import org.bouncycastle.openpgp.PGPPublicKey;
 import org.bouncycastle.openpgp.PGPPublicKeyRing;
+import org.bouncycastle.openpgp.PGPSecretKeyRing;
+import org.bouncycastle.openpgp.PGPSecretKeyRingCollection;
 import org.bouncycastle.util.io.Streams;
 
 /**
@@ -45,7 +49,7 @@ final class EncryptWithOpenPGPTestDriver {
   /**
    * The signature uid.
    */
-  private final String signatureUid;
+  private Long signatureKeyId = null;
 
   /**
    * The encryption public key ring.
@@ -58,8 +62,13 @@ final class EncryptWithOpenPGPTestDriver {
       final PGPAlgorithmSuite algorithmSuite) throws IOException {
 
     try {
-
-      this.signatureUid = config.getSignatureSecretKeyId();
+      PGPSecretKeyRingCollection secretKeys = config.getSecretKeyRings();
+      for (PGPSecretKeyRing ring : secretKeys) {
+        if (ring.getSecretKey().isSigningKey()) {
+          this.signatureKeyId = ring.getPublicKey().getKeyID();
+          break;
+        }
+      }
 
       this.encryptionPublicKeyRing =
           PGPUtilities.extractPublicKeyRingForUserId(config.getEncryptionPublicKeyId(),
@@ -92,7 +101,7 @@ final class EncryptWithOpenPGPTestDriver {
       NoSuchAlgorithmException, NoSuchProviderException, PGPException, SignatureException {
 
     try (final OutputStream encryptionStream = PGPEncryptingStream
-        .create(config, algorithmSuite, signatureUid, out, keySelectionStrategy,  armor, pubEncKeys)) {
+        .create(config, algorithmSuite, signatureKeyId, out, keySelectionStrategy,  armor, pubEncKeys)) {
       Streams.pipeAll(in, encryptionStream);
       encryptionStream.flush();
     }
